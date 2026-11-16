@@ -1,0 +1,21 @@
+EMPLOYEE DELETE + LOGIN ACCOUNT FIX
+
+1) Supabase > SQL Editor > New Query
+   EMPLOYEE_DELETE_LOGIN_FIX.sql file-er SQL paste kore Run korun.
+
+2) Supabase > Edge Functions > create-employee > Code
+   ZIP-er supabase/functions/create-employee/index.ts code replace kore Deploy updates.
+
+3) Edge Functions-e notun function deploy korun:
+   Name: delete-employee
+   ZIP-er supabase/functions/delete-employee/index.ts code paste korun > Deploy.
+
+4) Latest ZIP extract kore purono .env copy korun; npm install; npm run dev.
+
+Employee Delete korle linked Auth login + profile + directory record delete hobe.
+Existing employee-r name profile-e unique match na hole SQL auto-link korbe na;
+sei employee-r login account manually link/handle korte hobe. Name same multiple thakle safe thakar jonno link skip.
+
+
+Secrets (Dashboard): MY_PROJECT_URL, MY_SERVICE_ROLE_KEY, MY_ANON_KEY. Function code uses these names.
+SQL employee_directory.auth_user_id column must exist before deploying/using employee functions.

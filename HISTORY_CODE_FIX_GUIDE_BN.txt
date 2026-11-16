@@ -1,0 +1,4 @@
+এই ZIP-এ শুধু Project History insert/display code actual project_updates schema অনুযায়ী ঠিক করা হয়েছে:
+author_id, designer_name, progress, status, comment, created_at.
+এখন install: extract ZIP, আগের .env copy, npm install, npm run dev.
+Database SQL আর লাগবে না (সব column আগেই আছে বলে ধরে নেওয়া হয়েছে).

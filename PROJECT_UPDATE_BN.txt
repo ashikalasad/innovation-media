@@ -1,0 +1,21 @@
+INNOVATION MEDIA – PROJECT EDIT/WORKFLOW UPDATE
+
+1) Supabase Dashboard > SQL Editor > New Query
+2) Open PROJECT_FEATURES_SQL.sql, copy all SQL and Run.
+3) Extract this ZIP to a NEW folder (do not overwrite your previous folder).
+4) Copy your working .env file into this folder.
+5) Open CMD in this folder and run:
+   npm install
+   npm run dev
+6) Open the localhost URL printed by Vite.
+
+Added:
+- Edit Project button in Projects list and Recent Projects
+- Client name/contact is shown via selected client
+- Assigned Designer and Pastingman dropdowns from Employee Directory
+- Progress % (0–100)
+- Status: Design Running / Waiting for client approval / Design approved / Waiting for pasting / Project Handover Done
+- Short current-status comment
+- Dashboard Active Employees workload count (assigned active projects)
+- Original logo files retained (white logo on navy, color logo on white)
+- Copyright © 2026 Ashik Al Asad

@@ -1,0 +1,9 @@
+সহজ Setup:
+1) Supabase Dashboard > SQL Editor > New query খুলুন।
+2) EMPLOYEE_DIRECTORY_SQL.sql ফাইলের সব SQL কপি করে Run করুন (একবার)।
+3) ZIP extract করে পুরনো .env এই folder-এ কপি করুন।
+4) CMD: npm install তারপর npm run dev
+5) Clients > Add Client দিয়ে client save হবে; Employees > Add Employee দিয়ে directory employee save হবে।
+NOTE: Employee directory entry তৈরি হবে; আলাদা login account তৈরির জন্য নিরাপদ Edge Function লাগবে।
+Logo: Deep-blue sidebar-এ white logo; white login panel-এ color logo.
+Copyright © 2026 Ashik Al Asad.

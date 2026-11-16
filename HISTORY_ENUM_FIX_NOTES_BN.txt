@@ -1,0 +1,4 @@
+এই targeted fix-এ Project status display label থেকে DB enum mapping করা হয়েছে:
+Design Running=design_started, Waiting for client approval=client_approval, Design approved=design_completed, Waiting for pasting=pasting, Project Handover Done=handover_completed, Cancelled=cancelled.
+History insert status এখন enum value পাঠাবে; modal আবার সুন্দর label দেখাবে। Designer assignment projects table-এর assigned_designer_name/assigned_pasting_name কলামে save/load হয় (এই কলামগুলো আগে SQL-এ যোগ করা থাকতে হবে)।
+কোনো SQL নতুন করে লাগবে না যদি columns ইতিমধ্যে যোগ করা থাকে।

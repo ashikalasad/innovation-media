@@ -1,0 +1,7 @@
+Project Update History চালু করার নিয়ম
+1) Supabase Dashboard > SQL Editor > New Query
+2) PROJECT_UPDATE_HISTORY_SQL.sql ফাইলের সম্পূর্ণ SQL Run করুন।
+3) নতুন ZIP Extract করে আগের .env কপি করুন।
+4) npm install (প্রথমবার) এবং npm run dev চালান।
+5) Projects তালিকায় History বাটনে ক্লিক করলে Designer progress/status timeline দেখা যাবে।
+প্রতিবার Project Edit-এ Progress/Status/Comment পরিবর্তন হলে history-তে timestamp সহ রেকর্ড হবে।

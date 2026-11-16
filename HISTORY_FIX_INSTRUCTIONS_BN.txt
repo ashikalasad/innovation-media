@@ -1,0 +1,10 @@
+এই error ঠিক করার জন্য:
+
+1) Supabase Dashboard > SQL Editor > New query
+2) ZIP-এর PROJECT_HISTORY_SCHEMA_FIX.sql ফাইলের সব SQL paste করে Run করুন।
+3) Run success হলে ৩০-৬০ সেকেন্ড অপেক্ষা করুন (schema cache refresh)।
+4) ওয়েব অ্যাপ refresh করুন; Project page-এ আর assigned_designer_name error থাকার কথা নয়।
+5) Project Edit করে Save দিন, তারপর History খুলুন।
+
+কারণ: projects টেবিলে assigned_designer_name (এবং related assignment/status columns) ছিল না।
+এটি SQL migration-এর মাধ্যমে যোগ করতে হবে। শুধু ZIP update করলেই Supabase database column তৈরি হয় না।
