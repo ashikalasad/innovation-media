@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const supabaseAdmin = createClient(
+    const admin = createClient(
       Deno.env.get("MY_PROJECT_URL")!,
       Deno.env.get("MY_SERVICE_ROLE_KEY")!
     );
@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
     const {
       data: { user },
       error: userErr,
-    } = await supabaseAdmin.auth.getUser(token);
+    } = await admin.auth.getUser(token);
 
     if (userErr || !user) {
       return Response.json(
@@ -54,14 +54,13 @@ Deno.serve(async (req) => {
     // Super Admin is identified by immutable Auth UID.
     const isSuperAdmin = user.id === SUPER_ADMIN_UID;
 
-    // Check the actor's active profile.
-    const { data: actor, error: actorErr } = await supabaseAdmin
-      .from("profiles")
-      .select("role, is_active")
-      .eq("id", user.id)
-      .maybeSingle();
-
     if (!isSuperAdmin) {
+      const { data: actor, error: actorErr } = await admin
+        .from("profiles")
+        .select("role,is_active")
+        .eq("id", user.id)
+        .maybeSingle();
+
       if (actorErr || !actor || !actor.is_active) {
         return Response.json(
           { error: "Your account is inactive or unauthorized." },
@@ -69,13 +68,12 @@ Deno.serve(async (req) => {
         );
       }
 
-      // Check designation-based permission.
-      const { data: permission, error: permissionErr } =
-        await supabaseAdmin
-          .from("role_permissions")
-          .select("can_manage_employees")
-          .eq("role", actor.role)
-          .maybeSingle();
+      // Check designation-based employee management permission.
+      const { data: permission, error: permissionErr } = await admin
+        .from("role_permissions")
+        .select("can_manage_employees")
+        .eq("role", actor.role)
+        .maybeSingle();
 
       if (
         permissionErr ||
@@ -83,124 +81,103 @@ Deno.serve(async (req) => {
         permission.can_manage_employees !== true
       ) {
         return Response.json(
-          { error: "You do not have permission to add employees." },
+          { error: "You do not have permission to delete employees." },
           { status: 403, headers: corsHeaders }
         );
       }
     }
 
     const body = await req.json();
+    const employeeId = body.employee_id;
 
-    const {
-      full_name,
-      user_id,
-      password,
-      role,
-      phone,
-      whatsapp,
-    } = body;
-
-    const uid = String(user_id || "").trim().toLowerCase();
-    const name = String(full_name || "").trim();
-    const email = `${uid}@innovation.local`;
-
-    if (!name || !uid || !password || password.length < 8) {
+    if (!employeeId) {
       return Response.json(
-        {
-          error: "Name, User ID and password (8+ characters) are required.",
-        },
+        { error: "Employee ID is required." },
         { status: 400, headers: corsHeaders }
       );
     }
 
-    const allowedRoles = [
-      "boss",
-      "chief_designer",
-      "graphics_designer",
-      "marketing",
-      "operations",
-      "pasting",
-      "account_manager",
-    ];
-
-    if (!/^[a-z0-9._-]{3,32}$/.test(uid)) {
-      return Response.json(
-        {
-          error:
-            "User ID must be 3-32 characters (letters, numbers, dot, underscore, hyphen).",
-        },
-        { status: 400, headers: corsHeaders }
-      );
-    }
-
-    if (!allowedRoles.includes(role)) {
-      return Response.json(
-        { error: "Invalid role." },
-        { status: 400, headers: corsHeaders }
-      );
-    }
-
-    // Create Auth user.
-    const {
-      data: created,
-      error: createErr,
-    } = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: { full_name: name },
-    });
-
-    if (createErr || !created.user) {
-      return Response.json(
-        { error: createErr?.message || "Could not create user." },
-        { status: 400, headers: corsHeaders }
-      );
-    }
-
-    // Create profile.
-    const { error: profileErr } = await supabaseAdmin
-      .from("profiles")
-      .insert({
-        id: created.user.id,
-        full_name: name,
-        role,
-        phone: phone || null,
-        whatsapp: whatsapp || null,
-        is_active: true,
-      });
-
-    if (profileErr) {
-      await supabaseAdmin.auth.admin.deleteUser(created.user.id);
-
-      return Response.json(
-        { error: profileErr.message },
-        { status: 400, headers: corsHeaders }
-      );
-    }
-
-    // Add employee to directory.
-    const { error: dirErr } = await supabaseAdmin
+    const { data: employee, error: lookupErr } = await admin
       .from("employee_directory")
-      .insert({
-        full_name: name,
-        role,
-        phone: phone || null,
-        whatsapp: whatsapp || null,
-        created_by: user.id,
-        auth_user_id: created.user.id,
-      });
+      .select("id,auth_user_id,full_name")
+      .eq("id", employeeId)
+      .maybeSingle();
 
-    if (dirErr) {
-      await supabaseAdmin
+    if (lookupErr || !employee) {
+      return Response.json(
+        { error: "Employee not found." },
+        { status: 404, headers: corsHeaders }
+      );
+    }
+
+    // Never allow deleting the Super Admin account.
+    if (employee.auth_user_id === SUPER_ADMIN_UID) {
+      return Response.json(
+        { error: "The Super Admin account cannot be deleted." },
+        { status: 403, headers: corsHeaders }
+      );
+    }
+
+    // Prevent an employee from deleting their own account.
+    if (employee.auth_user_id === user.id) {
+      return Response.json(
+        { error: "You cannot delete your own account." },
+        { status: 403, headers: corsHeaders }
+      );
+    }
+
+    if (employee.auth_user_id) {
+      // Preserve project history but remove the deleted user's author reference.
+      const { error: historyErr } = await admin
+        .from("project_updates")
+        .update({ author_id: null })
+        .eq("author_id", employee.auth_user_id);
+
+      if (historyErr) {
+        return Response.json(
+          { error: "Project history update failed: " + historyErr.message },
+          { status: 400, headers: corsHeaders }
+        );
+      }
+
+      // Delete profile.
+      const { error: profileErr } = await admin
         .from("profiles")
         .delete()
-        .eq("id", created.user.id);
+        .eq("id", employee.auth_user_id);
 
-      await supabaseAdmin.auth.admin.deleteUser(created.user.id);
+      if (profileErr) {
+        return Response.json(
+          { error: "Profile delete failed: " + profileErr.message },
+          { status: 400, headers: corsHeaders }
+        );
+      }
 
+      // Delete login account.
+      const { error: authErr } = await admin.auth.admin.deleteUser(
+        employee.auth_user_id
+      );
+
+      if (
+        authErr &&
+        !authErr.message.toLowerCase().includes("not found")
+      ) {
+        return Response.json(
+          { error: "Login account delete failed: " + authErr.message },
+          { status: 400, headers: corsHeaders }
+        );
+      }
+    }
+
+    // Delete employee directory record after account operations.
+    const { error: dirErr } = await admin
+      .from("employee_directory")
+      .delete()
+      .eq("id", employeeId);
+
+    if (dirErr) {
       return Response.json(
-        { error: dirErr.message },
+        { error: "Directory delete failed: " + dirErr.message },
         { status: 400, headers: corsHeaders }
       );
     }
@@ -208,14 +185,15 @@ Deno.serve(async (req) => {
     return Response.json(
       {
         success: true,
-        user_id: uid,
-        login_email: email,
+        message: "Employee and login account deleted.",
       },
       { headers: corsHeaders }
     );
   } catch (e) {
     return Response.json(
-      { error: e instanceof Error ? e.message : "Unexpected error" },
+      {
+        error: e instanceof Error ? e.message : "Unexpected error",
+      },
       { status: 500, headers: corsHeaders }
     );
   }
