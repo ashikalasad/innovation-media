@@ -420,3 +420,6 @@ html, body, #root {
     grid-template-columns: 1fr;
   }
 }
+
+/* Role permission matrix */
+.role-permissions .table-wrap{overflow-x:auto}.role-permissions table{min-width:1050px}.role-permissions th,.role-permissions td{text-align:center;vertical-align:middle}.role-permissions th:first-child,.role-permissions td:first-child{text-align:left;position:sticky;left:0;background:#fff;z-index:1}.role-permissions input[type=checkbox]{width:18px;height:18px;accent-color:#f47b20;cursor:pointer}.role-permissions input[type=checkbox]:disabled{cursor:wait;opacity:.6}
