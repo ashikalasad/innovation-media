@@ -21,38 +21,42 @@ function App(){
  useEffect(()=>{supabase.auth.getSession().then(({data})=>{setSession(data.session);setLoading(false)});const{data:{subscription}}=supabase.auth.onAuthStateChange((_e,s)=>setSession(s));return()=>subscription.unsubscribe()},[]);
  useEffect(()=>{if(session){loadData();loadSecurity()}else{setIsSuperAdmin(false);setUserRole(null);setUserName('');setRolePermissions({})}},[session]);
  useEffect(()=>{
-  if(!session?.user?.id){setNotifications([]);setNotificationToast(null);seenNotificationIds.current=new Set();return}
+  const uid=session?.user?.id;
+  if(!uid){setNotifications([]);setNotificationToast(null);seenNotificationIds.current=new Set();return}
   let active=true;
-  const uid=session.user.id;
-  const acceptIncoming=(incoming,showToast=true)=>{
-   if(!incoming?.id||!active)return;
-   const allowed=incoming.recipient_id===uid||isSuperAdmin||userRole==='boss';
-   if(!allowed||seenNotificationIds.current.has(incoming.id))return;
-   seenNotificationIds.current.add(incoming.id);
-   if(showToast&&toastEnabled)setNotificationToast(incoming);
-  };
-  const fetchLatest=async(initial=false)=>{
+  const canSee=n=>uid===SUPER_ADMIN_UID||n?.recipient_id===uid||userRole==='boss';
+  const refreshNotifications=async({initial=false}={})=>{
    const {data,error}=await supabase.from('notifications').select('*').order('created_at',{ascending:false}).limit(50);
    if(!active)return;
    if(error){setError(error.message);return}
    const rows=data||[];
+   setNotifications(rows);
    if(initial){
     rows.forEach(n=>seenNotificationIds.current.add(n.id));
-    const latestUnread=rows.find(n=>!n.is_read&&(n.recipient_id===uid||isSuperAdmin||userRole==='boss'));
-    if(latestUnread&&toastEnabled)setNotificationToast(latestUnread);
-   }else{
-    rows.forEach(n=>acceptIncoming(n,true));
+    const unread=rows.find(n=>!n.is_read&&canSee(n));
+    if(unread&&toastEnabled)setNotificationToast(unread);
+    return;
    }
-   setNotifications(rows);
+   // Detect notifications created since the previous check, even without Realtime.
+   rows.filter(canSee).reverse().forEach(n=>{
+    if(n.id&&!seenNotificationIds.current.has(n.id)){
+     seenNotificationIds.current.add(n.id);
+     if(toastEnabled)setNotificationToast(n);
+    }
+   });
   };
-  fetchLatest(true);
+  refreshNotifications({initial:true});
   const channel=supabase.channel('notifications-live-'+uid)
    .on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications'},payload=>{
-    acceptIncoming(payload.new,true);
-    fetchLatest(false);
+    const n=payload.new;
+    if(n&&canSee(n)&&n.id&&!seenNotificationIds.current.has(n.id)){
+     seenNotificationIds.current.add(n.id);
+     if(toastEnabled)setNotificationToast(n);
+    }
+    refreshNotifications();
    }).subscribe();
-  // Polling fallback: ensures popups still arrive if Supabase Realtime publication is not enabled.
-  const pollId=setInterval(()=>fetchLatest(false),8000);
+  // Fallback polling catches new rows if Supabase Realtime is unavailable or not enabled.
+  const pollId=setInterval(()=>refreshNotifications(),4000);
   return()=>{active=false;clearInterval(pollId);supabase.removeChannel(channel)};
  },[session?.user?.id,isSuperAdmin,userRole,toastEnabled]);
  useEffect(()=>{if(!notificationToast)return;const timer=setTimeout(()=>setNotificationToast(null),6500);return()=>clearTimeout(timer)},[notificationToast]);
