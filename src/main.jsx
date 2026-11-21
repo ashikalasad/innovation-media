@@ -1,4 +1,4 @@
-import React,{useEffect,useMemo,useState} from 'react';
+import React,{useEffect,useMemo,useRef,useState} from 'react';
 import{createRoot}from'react-dom/client';
 import{createClient}from'@supabase/supabase-js';
 import{LayoutDashboard,FolderKanban,Users,UserRound,ChartNoAxesCombined,Settings,LogOut,Plus,Search,RefreshCw,Menu,X,Wallet,CheckCircle2,Clock3,AlertCircle,Building2,CalendarDays,MapPin,Phone,ArrowUpRight,Pencil,Trash2,MessageCircle,Bell,CheckCheck}from'lucide-react';
@@ -14,12 +14,47 @@ const nav=[['Dashboard',LayoutDashboard,'dashboard'],['Projects',FolderKanban,'c
 function App(){
  const [session,setSession]=useState(null),[page,setPage]=useState('Dashboard'),[loading,setLoading]=useState(true),[error,setError]=useState(''),[projects,setProjects]=useState([]),[clients,setClients]=useState([]),[employees,setEmployees]=useState([]),[query,setQuery]=useState(''),[modal,setModal]=useState(false),[mobile,setMobile]=useState(false),[saving,setSaving]=useState(false),[employeeModal,setEmployeeModal]=useState(false),[clientModal,setClientModal]=useState(false),[editClientId,setEditClientId]=useState(null),[editEmployeeId,setEditEmployeeId]=useState(null),[editProjectId,setEditProjectId]=useState(null),[historyProject,setHistoryProject]=useState(null),[historyRows,setHistoryRows]=useState([]),[historyAuthors,setHistoryAuthors]=useState({}),[historyLoading,setHistoryLoading]=useState(false),[clientForm,setClientForm]=useState({company_name:'',contact_name:'',designation:'',mobile:'',whatsapp:''}),[employeeForm,setEmployeeForm]=useState({full_name:'',role:'graphics_designer',phone:'',whatsapp:'',user_id:'',password:''});
  const [notifications,setNotifications]=useState([]),[notificationLoading,setNotificationLoading]=useState(false),[notificationToast,setNotificationToast]=useState(null),[toastEnabled,setToastEnabled]=useState(()=>localStorage.getItem('im_notification_toast')!=='false');
+ const seenNotificationIds=useRef(new Set());
  const [isSuperAdmin,setIsSuperAdmin]=useState(false),[userRole,setUserRole]=useState(null),[userName,setUserName]=useState(''),[clockNow,setClockNow]=useState(()=>new Date()),[rolePermissions,setRolePermissions]=useState({}),[rolePermissionsByRole,setRolePermissionsByRole]=useState({}),[permissionSaving,setPermissionSaving]=useState(false),[permissionLoading,setPermissionLoading]=useState(false);
  const [reportPeriod,setReportPeriod]=useState('weekly');const [reportDate,setReportDate]=useState(new Date().toISOString().slice(0,10));
  const [form,setForm]=useState({project_name:'',client_id:'',project_location:'',work_types:[],client_requirement:'',start_date:'',handover_date:'',assigned_designer_name:'',assigned_pasting_name:'',assigned_marketing_name:'',client_reference_name:'',status_label:'Design Running',status_comment:'',priority:'Normal',deadline_date:'',revision_count:0,total_bill:0,advance:0,paid_on_completion:0});
  useEffect(()=>{supabase.auth.getSession().then(({data})=>{setSession(data.session);setLoading(false)});const{data:{subscription}}=supabase.auth.onAuthStateChange((_e,s)=>setSession(s));return()=>subscription.unsubscribe()},[]);
  useEffect(()=>{if(session){loadData();loadSecurity()}else{setIsSuperAdmin(false);setUserRole(null);setUserName('');setRolePermissions({})}},[session]);
- useEffect(()=>{if(!session?.user?.id){setNotifications([]);setNotificationToast(null);return}loadNotifications();const channel=supabase.channel('notifications-live-'+session.user.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications'},(payload)=>{const incoming=payload.new;if(incoming&&(incoming.recipient_id===session.user.id||isSuperAdmin||userRole==='boss')){if(toastEnabled)setNotificationToast(incoming);loadNotifications()}}).subscribe();return()=>{supabase.removeChannel(channel)}},[session?.user?.id,isSuperAdmin,userRole,toastEnabled]);
+ useEffect(()=>{
+  if(!session?.user?.id){setNotifications([]);setNotificationToast(null);seenNotificationIds.current=new Set();return}
+  let active=true;
+  const uid=session.user.id;
+  const acceptIncoming=(incoming,showToast=true)=>{
+   if(!incoming?.id||!active)return;
+   const allowed=incoming.recipient_id===uid||isSuperAdmin||userRole==='boss';
+   if(!allowed||seenNotificationIds.current.has(incoming.id))return;
+   seenNotificationIds.current.add(incoming.id);
+   if(showToast&&toastEnabled)setNotificationToast(incoming);
+  };
+  const fetchLatest=async(initial=false)=>{
+   const {data,error}=await supabase.from('notifications').select('*').order('created_at',{ascending:false}).limit(50);
+   if(!active)return;
+   if(error){setError(error.message);return}
+   const rows=data||[];
+   if(initial){
+    rows.forEach(n=>seenNotificationIds.current.add(n.id));
+    const latestUnread=rows.find(n=>!n.is_read&&(n.recipient_id===uid||isSuperAdmin||userRole==='boss'));
+    if(latestUnread&&toastEnabled)setNotificationToast(latestUnread);
+   }else{
+    rows.forEach(n=>acceptIncoming(n,true));
+   }
+   setNotifications(rows);
+  };
+  fetchLatest(true);
+  const channel=supabase.channel('notifications-live-'+uid)
+   .on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications'},payload=>{
+    acceptIncoming(payload.new,true);
+    fetchLatest(false);
+   }).subscribe();
+  // Polling fallback: ensures popups still arrive if Supabase Realtime publication is not enabled.
+  const pollId=setInterval(()=>fetchLatest(false),8000);
+  return()=>{active=false;clearInterval(pollId);supabase.removeChannel(channel)};
+ },[session?.user?.id,isSuperAdmin,userRole,toastEnabled]);
  useEffect(()=>{if(!notificationToast)return;const timer=setTimeout(()=>setNotificationToast(null),6500);return()=>clearTimeout(timer)},[notificationToast]);
  function toggleToast(){setToastEnabled(v=>{const next=!v;localStorage.setItem('im_notification_toast',String(next));if(!next)setNotificationToast(null);return next})}
   useEffect(()=>{const timer=setInterval(()=>setClockNow(new Date()),1000);return()=>clearInterval(timer)},[]);
