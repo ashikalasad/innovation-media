@@ -423,3 +423,115 @@ html, body, #root {
 
 /* Role permission matrix */
 .role-permissions .table-wrap{overflow-x:auto}.role-permissions table{min-width:1050px}.role-permissions th,.role-permissions td{text-align:center;vertical-align:middle}.role-permissions th:first-child,.role-permissions td:first-child{text-align:left;position:sticky;left:0;background:#fff;z-index:1}.role-permissions input[type=checkbox]{width:18px;height:18px;accent-color:#f47b20;cursor:pointer}.role-permissions input[type=checkbox]:disabled{cursor:wait;opacity:.6}
+
+/* Innovation Media - mobile-only layout refinements.
+   All rules are scoped to small screens; desktop styling is untouched. */
+@media (max-width:700px) {
+  html, body, #root { overflow-x:hidden; }
+  .app, .main, .content { min-width:0; width:100%; }
+  .topbar { width:100%; }
+  .top-actions .live { white-space:nowrap; }
+  .top-actions .avatar { flex:0 0 32px; }
+  .page-head > div:first-child { min-width:0; flex:1 1 100%; }
+  .page-head .primary { max-width:100%; }
+  .dashboard-clock { box-sizing:border-box; }
+  .toolbar { gap:9px; }
+  .toolbar > * { min-width:0; max-width:100%; }
+  .report-panel, .report-panel * { min-width:0; }
+  .report-controls { width:100%; }
+  .report-controls select, .report-controls input { box-sizing:border-box; }
+  .modal-back { overflow-y:auto; }
+  .modal { margin:auto; }
+  .modal-actions { gap:8px; }
+  .modal-actions button { min-width:110px; }
+  .role-permissions .table-wrap { overflow-x:auto!important; }
+  .role-permissions table { min-width:900px!important; }
+}
+@media (max-width:380px) {
+  .topbar { padding-left:8px; padding-right:8px; }
+  .top-actions { gap:5px; }
+  .live { font-size:8px; }
+  .content { padding-left:9px; padding-right:9px; }
+  .modal { padding:13px; }
+}
+
+
+/* Mobile-only Project cards. Desktop table remains unchanged. */
+/* Mobile-only Project cards. Desktop table remains unchanged. */
+@media (max-width:700px){
+  .project-table-wrap{
+    overflow:visible!important;
+    border:0!important;
+    background:transparent!important;
+    border-radius:0!important;
+  }
+  .project-table{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    table-layout:auto!important;
+    border-collapse:separate!important;
+    border-spacing:0!important;
+    background:transparent!important;
+  }
+  .project-table thead{display:none!important}
+  .project-table tbody{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:12px!important;
+    width:100%!important;
+  }
+  .project-table tbody tr{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:0 12px!important;
+    width:100%!important;
+    padding:10px 12px!important;
+    border:1px solid #e5eaf2!important;
+    border-radius:12px!important;
+    background:#fff!important;
+    box-shadow:0 3px 10px rgba(20,43,85,.045)!important;
+  }
+  .project-table tbody td{
+    display:block!important;
+    width:auto!important;
+    min-width:0!important;
+    padding:9px 0!important;
+    border:0!important;
+    border-bottom:1px solid #eef2f7!important;
+    font-size:12px!important;
+    overflow-wrap:anywhere!important;
+  }
+  .project-table tbody td::before{
+    display:block;
+    margin-bottom:5px;
+    color:#94a3b8;
+    font-size:9px;
+    line-height:1.2;
+    font-weight:800;
+    letter-spacing:.07em;
+  }
+  .project-table tbody td:nth-child(1){grid-column:1/-1}
+  .project-table tbody td:nth-child(1)::before{content:"PROJECT"}
+  .project-table tbody td:nth-child(2)::before{content:"CLIENT"}
+  .project-table tbody td:nth-child(3)::before{content:"STATUS"}
+  .project-table tbody td:nth-child(4)::before{content:"PROGRESS"}
+  .project-table tbody td:nth-child(5)::before{content:"DEADLINE / HANDOVER"}
+  .project-table tbody td:nth-child(6)::before{content:"PRIORITY · REVISIONS"}
+  .project-table tbody td:nth-child(7){
+    grid-column:1/-1;
+    border-bottom:0!important;
+    padding-bottom:2px!important;
+  }
+  .project-table tbody td:nth-child(7)::before{content:"ACTIONS"}
+  .project-table tbody td:nth-child(1)>b,
+  .project-table tbody td:nth-child(2)>b{font-size:13px!important}
+  .project-table tbody td small{font-size:10.5px!important}
+  .project-table tbody td:nth-child(4) .progress{max-width:100%;margin-top:3px}
+  .project-table tbody td:last-child>div{justify-content:flex-start}
+  .project-table tbody td:last-child button{min-height:36px;font-size:11px!important}
+}
+@media(max-width:360px){
+  .project-table tbody tr{grid-template-columns:minmax(0,1fr)!important}
+  .project-table tbody td:nth-child(n){grid-column:1/-1}
+}
