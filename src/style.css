@@ -535,3 +535,101 @@ html, body, #root {
   .project-table tbody tr{grid-template-columns:minmax(0,1fr)!important}
   .project-table tbody td:nth-child(n){grid-column:1/-1}
 }
+
+
+/* Dashboard KPI cards — visual refresh, scoped only to Dashboard stats */
+.dashboard-stats {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.dashboard-stats > .stat {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 178px;
+  padding: 22px 21px 19px;
+  border: 1px solid #e5eaf2;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #ffffff 0%, #fbfcff 100%);
+  box-shadow: 0 7px 22px rgba(23, 42, 77, .055);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.dashboard-stats > .stat::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  z-index: -1;
+  background: var(--stat-accent, #4778d8);
+}
+.dashboard-stats > .stat::after {
+  content: "";
+  position: absolute;
+  width: 126px;
+  height: 126px;
+  right: -48px;
+  top: -54px;
+  border-radius: 50%;
+  z-index: -1;
+  background: var(--stat-glow, rgba(71, 120, 216, .09));
+  pointer-events: none;
+}
+.dashboard-stats > .stat:nth-child(1) { --stat-accent: #4778d8; --stat-glow: rgba(71,120,216,.10); }
+.dashboard-stats > .stat:nth-child(2) { --stat-accent: #f47b20; --stat-glow: rgba(244,123,32,.11); }
+.dashboard-stats > .stat:nth-child(3) { --stat-accent: #8661d4; --stat-glow: rgba(134,97,212,.11); }
+.dashboard-stats > .stat:nth-child(4) { --stat-accent: #20a875; --stat-glow: rgba(32,168,117,.11); }
+.dashboard-stats > .stat:nth-child(5) { --stat-accent: #8661d4; --stat-glow: rgba(134,97,212,.11); }
+.dashboard-stats > .stat:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--stat-accent) 38%, #e5eaf2);
+  box-shadow: 0 14px 30px rgba(23, 42, 77, .10);
+}
+.dashboard-stats .stat-icon {
+  width: 46px;
+  height: 46px;
+  margin-bottom: 19px;
+  border-radius: 13px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.65);
+}
+.dashboard-stats .stat-icon svg { width: 21px; height: 21px; }
+.dashboard-stats .stat-label {
+  color: #71819a;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+.dashboard-stats .stat-value {
+  margin: 7px 0 6px;
+  color: #142b4d;
+  font-size: clamp(25px, 2vw, 30px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -.9px;
+  overflow-wrap: anywhere;
+}
+.dashboard-stats .stat-note {
+  color: #91a0b5;
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+@media (max-width: 1200px) {
+  .dashboard-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .dashboard-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 17px;
+  }
+  .dashboard-stats > .stat {
+    min-height: 154px;
+    padding: 15px 13px 13px;
+    border-radius: 13px;
+  }
+  .dashboard-stats .stat-icon { width: 37px; height: 37px; margin-bottom: 13px; }
+  .dashboard-stats .stat-value { font-size: 22px; }
+  .dashboard-stats .stat-note { font-size: 9px; }
+  .dashboard-stats > .stat:nth-child(5) { grid-column: 1 / -1; }
+}
