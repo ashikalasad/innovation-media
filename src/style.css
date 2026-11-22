@@ -651,3 +651,82 @@ html, body, #root {
 .employee-photo-controls input{max-width:100%;font-size:12px}
 .employee-photo-controls small{font-size:10px;color:#8290a8}
 @media(max-width:700px){.workload-row{min-height:80px;padding:11px;gap:9px}.workload-avatar{width:40px;height:40px;flex-basis:40px}.workload-row>strong{min-width:48px;font-size:19px}.workload-identity b{font-size:12px}.employee-photo-editor{align-items:flex-start;flex-wrap:wrap}}
+
+/* Active employee workload: keep names and project counts inside each card */
+.employee-workload {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+}
+.workload-row {
+  min-width: 0;
+  width: 100%;
+  gap: 10px;
+}
+.workload-row .workload-avatar {
+  flex: 0 0 48px;
+  width: 48px;
+  min-width: 48px;
+}
+.workload-row > div:nth-child(2) {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.workload-row > div:nth-child(2) b {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  line-height: 1.3;
+}
+.workload-row > div:nth-child(2) small {
+  display: block;
+  overflow-wrap: anywhere;
+  line-height: 1.3;
+}
+.workload-row > strong {
+  flex: 0 0 48px;
+  min-width: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  white-space: nowrap;
+  line-height: 1.1;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.workload-row > strong small {
+  display: block;
+  white-space: nowrap;
+  line-height: 1.2;
+  margin-top: 3px;
+}
+
+
+/* Final workload count fit: reserve enough width for the PROJECTS label */
+.workload-row > strong {
+  flex: 0 0 60px;
+  width: 60px;
+  min-width: 60px;
+  max-width: 60px;
+  box-sizing: border-box;
+  align-items: flex-end;
+}
+.workload-row > strong small {
+  font-size: 8px;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+}
+.workload-row > div:nth-child(2) {
+  flex: 1 1 0;
+  min-width: 0;
+}
+@media (max-width: 700px) {
+  .workload-row > strong {
+    flex-basis: 54px;
+    width: 54px;
+    min-width: 54px;
+    max-width: 54px;
+  }
+  .workload-row > strong small { font-size: 7px; }
+}
