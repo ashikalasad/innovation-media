@@ -616,3 +616,38 @@ html, body, #root {
   .dashboard-stats .stat-note { font-size: 9px; }
   .dashboard-stats > .stat:nth-child(5) { grid-column: 1 / -1; }
 }
+
+
+/* Employee profile photos and workload cards */
+.workload-row{min-height:92px;padding:14px 15px;gap:12px;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+.workload-row:hover{transform:translateY(-2px);border-color:#cbd8eb;box-shadow:0 9px 22px rgba(20,43,85,.07)}
+.workload-avatar,.employee-list-avatar{width:48px;height:48px;flex:0 0 48px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:#eaf1ff;color:#23416d;font-size:16px;font-weight:800;border:2px solid #fff;box-shadow:0 0 0 1px #dfe7f2}
+.workload-avatar img,.employee-list-avatar img,.employee-photo-editor>img{width:100%;height:100%;object-fit:cover;display:block}
+.workload-identity{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.workload-identity b{font-size:13px;line-height:1.35;color:#172b4d;overflow-wrap:anywhere}
+.workload-identity small{font-size:10px;color:#8290a8;text-transform:capitalize}
+.workload-row>strong{flex:0 0 auto;min-width:65px;text-align:right;font-size:22px;color:#142b55;font-variant-numeric:tabular-nums}
+.workload-row>strong small{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#8a98ad;font-weight:700}
+.employee-list-avatar{width:42px;height:42px;flex-basis:42px;font-size:14px}
+.employee-photo-editor{display:flex;align-items:center;gap:16px;padding:14px;border:1px solid #e5eaf2;border-radius:12px;background:#fafcff}
+.employee-photo-editor>img,.employee-photo-placeholder{width:76px;height:76px;flex:0 0 76px;border-radius:50%;object-fit:cover}
+.employee-photo-placeholder{display:grid;place-items:center;background:#eaf1ff;color:#23416d;font-size:24px;font-weight:800}
+.employee-photo-controls{display:flex;flex-direction:column;align-items:flex-start;gap:7px;min-width:0}
+.employee-photo-controls input{max-width:100%;font-size:12px}
+.employee-photo-controls small{font-size:10px;color:#8290a8}
+@media(max-width:700px){.workload-row{min-height:80px;padding:11px;gap:9px}.workload-avatar{width:40px;height:40px;flex-basis:40px}.workload-row>strong{min-width:48px;font-size:19px}.workload-identity b{font-size:12px}.employee-photo-editor{align-items:flex-start;flex-wrap:wrap}}
+.workload-avatar,.employee-list-avatar{width:48px;height:48px;flex:0 0 48px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:#eaf1ff;color:#23416d;font-size:16px;font-weight:800;border:2px solid #fff;box-shadow:0 0 0 1px #dfe7f2}
+.workload-avatar img,.employee-list-avatar img,.employee-photo-editor>img{width:100%;height:100%;object-fit:cover;display:block}
+.workload-identity{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.workload-identity b{font-size:13px;line-height:1.35;color:#172b4d;overflow-wrap:anywhere}
+.workload-identity small{font-size:10px;color:#8290a8;text-transform:capitalize}
+.workload-row>strong{flex:0 0 auto;min-width:65px;text-align:right;font-size:22px;color:#142b55;font-variant-numeric:tabular-nums}
+.workload-row>strong small{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#8a98ad;font-weight:700}
+.employee-list-avatar{width:42px;height:42px;flex-basis:42px;font-size:14px}
+.employee-photo-editor{display:flex;align-items:center;gap:16px;padding:14px;border:1px solid #e5eaf2;border-radius:12px;background:#fafcff}
+.employee-photo-editor>img,.employee-photo-placeholder{width:76px;height:76px;flex:0 0 76px;border-radius:50%;object-fit:cover}
+.employee-photo-placeholder{display:grid;place-items:center;background:#eaf1ff;color:#23416d;font-size:24px;font-weight:800}
+.employee-photo-controls{display:flex;flex-direction:column;align-items:flex-start;gap:7px;min-width:0}
+.employee-photo-controls input{max-width:100%;font-size:12px}
+.employee-photo-controls small{font-size:10px;color:#8290a8}
+@media(max-width:700px){.workload-row{min-height:80px;padding:11px;gap:9px}.workload-avatar{width:40px;height:40px;flex-basis:40px}.workload-row>strong{min-width:48px;font-size:19px}.workload-identity b{font-size:12px}.employee-photo-editor{align-items:flex-start;flex-wrap:wrap}}
