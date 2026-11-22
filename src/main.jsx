@@ -12,10 +12,22 @@ const isProjectOnHold=(p)=>p?.status==='hold'||String(p?.status_label||'').trim(
 const isProjectCancelled=(p)=>p?.status==='cancelled'||String(p?.status_label||'').toLowerCase().includes('cancel');
 const isProjectInProgress=(p)=>!isProjectCompleted(p)&&!isProjectOnHold(p)&&!isProjectCancelled(p);
 const isProjectRunningOrHold=(p)=>{
- const status=String(p?.status||'').trim().toLowerCase();
- const label=String(p?.status_label||'').trim().toLowerCase();
- const allowed=['design_started','client_approval','design_completed','pasting','hold','design running','waiting for client approval','design approved','waiting for pasting'];
- return allowed.includes(status)||allowed.includes(label);
+ // The database status enum is the source of truth. Use status_label only
+ // for older rows that do not have a usable status value.
+ const normalize=(value)=>({
+  'design_started':'design_started','design running':'design_started',
+  'client_approval':'client_approval','waiting for client approval':'client_approval',
+  'design_completed':'design_completed','design approved':'design_completed',
+  'pasting':'pasting','waiting for pasting':'pasting',
+  'hold':'hold',
+  'handover_completed':'handover_completed','project handover done':'handover_completed','completed':'handover_completed',
+  'cancelled':'cancelled','project cancelled':'cancelled',
+  'printing':'printing'
+ }[String(value||'').trim().toLowerCase()]||'');
+ const status=normalize(p?.status);
+ const label=normalize(p?.status_label);
+ const effectiveStatus=status||label;
+ return ['design_started','client_approval','design_completed','pasting','hold'].includes(effectiveStatus);
 };
 const SUPER_ADMIN_UID='bc251129-3b29-4111-8f59-e68a577a1501';
 const ROLE_OPTIONS=[['boss','Boss'],['chief_designer','Chief Designer'],['graphics_designer','Graphics Designer'],['marketing','Marketing Officer'],['operations','Operations Officer'],['pasting','Pasting / Installation'],['account_manager','Account Manager']];
