@@ -12,8 +12,9 @@ const isProjectOnHold=(p)=>p?.status==='hold'||String(p?.status_label||'').trim(
 const isProjectCancelled=(p)=>p?.status==='cancelled'||String(p?.status_label||'').toLowerCase().includes('cancel');
 const isProjectInProgress=(p)=>!isProjectCompleted(p)&&!isProjectOnHold(p)&&!isProjectCancelled(p);
 const isProjectRunningOrHold=(p)=>{
- // The database status enum is the source of truth. Use status_label only
- // for older rows that do not have a usable status value.
+ // The Projects table displays status_label, so use it as the primary
+ // source for the employee workload count. Fall back to the enum status
+ // only when the displayed label is missing or cannot be recognized.
  const normalize=(value)=>({
   'design_started':'design_started','design running':'design_started',
   'client_approval':'client_approval','waiting for client approval':'client_approval',
@@ -24,9 +25,9 @@ const isProjectRunningOrHold=(p)=>{
   'cancelled':'cancelled','project cancelled':'cancelled',
   'printing':'printing'
  }[String(value||'').trim().toLowerCase()]||'');
- const status=normalize(p?.status);
  const label=normalize(p?.status_label);
- const effectiveStatus=status||label;
+ const status=normalize(p?.status);
+ const effectiveStatus=label||status;
  return ['design_started','client_approval','design_completed','pasting','hold'].includes(effectiveStatus);
 };
 const SUPER_ADMIN_UID='bc251129-3b29-4111-8f59-e68a577a1501';
