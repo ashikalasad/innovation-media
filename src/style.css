@@ -668,3 +668,4 @@ html, body, #root {
 .employee-photo-controls input{max-width:100%;font-size:12px}
 .employee-photo-controls small{font-size:10px;color:#8290a8}
 @media(max-width:700px){.workload-row{min-height:80px;padding:11px;gap:9px}.workload-avatar{width:40px;height:40px;flex-basis:40px}.workload-row>strong{min-width:48px;font-size:19px}.workload-identity b{font-size:12px}.employee-photo-editor{align-items:flex-start;flex-wrap:wrap}}
+
