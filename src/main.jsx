@@ -316,7 +316,6 @@ function printDocument(doc){
   <table class="totals"><tr><td>Gross Total</td><td>${moneyBD(doc.gross_total)}</td></tr><tr><td>Discount</td><td>${moneyBD(doc.discount)}</td></tr><tr><td>Net Total</td><td><b>${moneyBD(net)}</b></td></tr></table>
   ${isInvoice?`<div class="subhead">Payments</div><table class="payments"><thead><tr><th>Date</th><th>Method</th><th>Amount</th></tr></thead><tbody>${payments||'<tr><td colspan="3" class="center">No payment received</td></tr>'}</tbody></table><table class="summary"><tr><td>Total Paid</td><td>${moneyBD(totalPaid)}</td></tr><tr><td>Due</td><td>${moneyBD(doc.due??Math.max(0,net-totalPaid))}</td></tr><tr><td>Other Due</td><td>${moneyBD(doc.other_due)}</td></tr><tr><td><b>Total Current Due</b></td><td><b>${moneyBD(currentDue)}</b></td></tr></table>`:''}
   <div class="words">In Words: ${htmlSafe(numberToWordsBD(net))} Taka Only.</div>${doc.notes?`<div class="notes"><b>Note:</b> ${htmlSafe(doc.notes)}</div>`:''}${paidStamp}
-  <footer class="footer"><span class="phone">Phone: ${htmlSafe(co.phone||'')}</span>${co.email?`<span>Email: ${htmlSafe(co.email)}</span>`:''}<span class="address">${htmlSafe(co.address||'')}</span></footer>
   </body></html>`;
   // Print inside a same-page hidden iframe; this avoids popup blockers entirely.
   const oldFrame=document.getElementById('billing-print-frame');if(oldFrame)oldFrame.remove();
