@@ -1,0 +1,22 @@
+INNOVATION MEDIA PMS - QUOTATION & INVOICE MODULE
+
+COMPANY-SPECIFIC PRINT TEMPLATES
+1) Innovation Media: unchanged; keeps the Innovation Media invoice layout from invoice_1785.pdf and uses the existing public/logo-color.png.
+2) Sign Edge: unchanged; keeps the Sign Edge green/gold letter-style bill based on J M Global Overseas-1.pdf.
+3) Aesthetic Edge: updated to follow the newly supplied Aesthetic Edge bill (bill for faridpur__Corrected Bill-1.pdf): Aesthetic Edge logo, gold/brown header bar, To / letter body, SI / Job Description / Dimension / Rate / Amount table, Total Amount, Advance, Payment, amount in words, Md Ataur Rahman Robin / COO signature, and grey footer. Uses Aesthetic Edge's supplied phone number and shared address. Email is omitted as requested.
+
+INSTALLATION
+1. Back up your current source files and database.
+2. Run billing_module_setup.sql in Supabase SQL Editor.
+3. Replace src/main.jsx with main.jsx.
+4. Replace src/style.css with style.css.
+5. Copy the two PNG files from public/ into your project's public/ folder.
+6. Keep your existing public/logo-color.png for Innovation Media.
+7. Commit, push, merge and deploy.
+
+DOCUMENT NUMBERING
+Quotation: QUO-IM-YYYY-0001 / QUO-SE-YYYY-0001 / QUO-AE-YYYY-0001
+Invoice:   INV-IM-YYYY-0001 / INV-SE-YYYY-0001 / INV-AE-YYYY-0001
+
+PDF OUTPUT
+The Print / PDF action opens the browser print dialog. Choose Save as PDF.
