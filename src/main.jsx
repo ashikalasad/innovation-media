@@ -347,6 +347,7 @@ function printDocument(doc){
   const co=doc.company_snapshot||BILLING_COMPANIES[doc.company_key]||BILLING_COMPANIES.innovation_media;
   const isInvoice=doc.document_type==='invoice';
   // Use the document number as the suggested PDF filename in the browser print dialog.
+  // The saved PDF name must be the generated invoice/quotation serial number.
   const fileBaseName=String(doc.document_number|| (isInvoice?'Invoice':'Quotation')).replace(/[\\/:*?"<>|]+/g,'-').trim() || (isInvoice?'Invoice':'Quotation');
   const displayDate=doc.document_date?new Date(doc.document_date+'T12:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}):'';
   const items=(doc.items||[]).map((x,i)=>`<tr><td class="center">${i+1}</td><td>${htmlSafe(x.description||'—')}</td><td class="center">${htmlSafe(x.size||'—')}</td><td class="num">${moneyBD(x.sft)}</td><td class="num">${moneyBD(x.qty)}</td><td class="num">${moneyBD(x.total)}</td></tr>`).join('');
@@ -372,12 +373,16 @@ function printDocument(doc){
   // Print inside a same-page hidden iframe; this avoids popup blockers entirely.
   const oldFrame=document.getElementById('billing-print-frame');if(oldFrame)oldFrame.remove();
   const frame=document.createElement('iframe');frame.id='billing-print-frame';frame.setAttribute('aria-hidden','true');
+  // Set the frame's own title/name before printing, then set the document title too.
+  // Chromium uses the printed document title as the suggested Save as PDF filename.
+  frame.title=fileBaseName;
+  frame.name=fileBaseName;
   frame.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;';
   document.body.appendChild(frame);
   const frameDoc=frame.contentDocument||frame.contentWindow.document;
   frameDoc.open();frameDoc.write(html);frameDoc.close();
-  // Explicitly set the iframe title as well; Chrome uses it as the default Save as PDF filename.
   frameDoc.title=fileBaseName;
+  if(frame.contentWindow)frame.contentWindow.name=fileBaseName;
   let printStarted=false;
   const doPrint=()=>{if(printStarted)return;printStarted=true;const win=frame.contentWindow;if(!win)return;const imgs=Array.from(frameDoc.images);Promise.all(imgs.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=resolve;img.onerror=resolve}))).then(()=>{setTimeout(()=>{win.focus();win.print();},250)});};
   frame.onload=doPrint;
