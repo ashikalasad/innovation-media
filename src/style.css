@@ -1070,3 +1070,67 @@ body{background:var(--im-bg);color:var(--im-ink)}
  .topbar .top-profile-copy small{max-width:95px}
  .donut-layout{flex-wrap:wrap!important;justify-content:center!important}
 }
+
+
+/* Donut-only revision: semi-circular segmented dashboard gauge */
+.project-donut{
+  width:198px!important;
+  height:104px!important;
+  flex:0 0 198px!important;
+  position:relative!important;
+  display:block!important;
+  overflow:hidden!important;
+  border-radius:110px 110px 0 0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.project-donut:after{
+  content:"";
+  position:absolute;
+  width:198px;
+  height:198px;
+  left:0;
+  top:0;
+  border-radius:50%;
+  background:conic-gradient(
+    from 270deg,
+    var(--im-orange) 0 var(--run),
+    var(--im-green) var(--run) calc(var(--run) + var(--done)),
+    var(--im-navy) calc(var(--run) + var(--done)) calc(var(--run) + var(--done) + var(--hold)),
+    #e45b5b calc(var(--run) + var(--done) + var(--hold)) 50%,
+    transparent 50% 100%
+  );
+}
+.project-donut:before{
+  content:"";
+  position:absolute;
+  z-index:1;
+  width:148px;
+  height:148px;
+  left:25px;
+  top:25px;
+  inset:auto!important;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 2px 12px rgba(16,43,77,.07);
+}
+.project-donut .donut-center{
+  position:absolute!important;
+  z-index:2!important;
+  left:50%!important;
+  top:67%!important;
+  transform:translate(-50%,-50%)!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  white-space:nowrap;
+}
+@media(max-width:700px){
+ .project-donut{
+   width:150px!important;height:80px!important;flex-basis:150px!important;
+   border-radius:82px 82px 0 0!important;
+ }
+ .project-donut:after{width:150px;height:150px}
+ .project-donut:before{width:112px;height:112px;left:19px;top:19px}
+ .project-donut .donut-center{top:67%!important}
+}
