@@ -1134,3 +1134,44 @@ body{background:var(--im-bg);color:var(--im-ink)}
  .project-donut:before{width:112px;height:112px;left:19px;top:19px}
  .project-donut .donut-center{top:67%!important}
 }
+
+
+/* Exact reference-style semi-donut: SVG arc segments across a flat baseline */
+.project-donut{
+  width:198px!important;
+  height:112px!important;
+  flex:0 0 198px!important;
+  position:relative!important;
+  display:block!important;
+  overflow:visible!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.project-donut:before,.project-donut:after{display:none!important;content:none!important}
+.project-donut svg{
+  display:block!important;
+  width:198px!important;
+  height:112px!important;
+  overflow:visible!important;
+}
+.project-donut .donut-center{
+  position:absolute!important;
+  z-index:2!important;
+  left:50%!important;
+  top:76%!important;
+  transform:translate(-50%,-50%)!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  white-space:nowrap!important;
+}
+.project-donut .donut-center b{font-size:30px!important;line-height:1!important;color:#173a72!important}
+.project-donut .donut-center small{font-size:10px!important;line-height:1.2!important;color:#8796aa!important}
+@media(max-width:700px){
+ .project-donut{width:150px!important;height:85px!important;flex-basis:150px!important}
+ .project-donut svg{width:150px!important;height:85px!important}
+ .project-donut .donut-center{top:76%!important}
+ .project-donut .donut-center b{font-size:24px!important}
+}
